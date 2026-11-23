@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ghost-probe"
+dynamic = ["version"]
+description = "Reader for the Ghost Probe. The words are read from https://azus.ai/tools/ghost-probe/ each time; none ship in this package."
+readme = "README.md"
+# Use is governed by the terms published at https://azus.ai/tools/ghost-probe/
+license = "LicenseRef-Westfield-Ghost-Probe-Terms"
+requires-python = ">=3.11"
+authors = [{ name = "Westfield Innovations LLC" }]
+keywords = ["ai", "ghost-probe", "audit", "language"]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://azus.ai/tools/ghost-probe/"
+
+[project.scripts]
+ghost-probe = "ghost_probe:main"
+
+[tool.setuptools]
+py-modules = ["ghost_probe"]
+
+[tool.setuptools.dynamic]
+version = { attr = "ghost_probe.__version__" }
