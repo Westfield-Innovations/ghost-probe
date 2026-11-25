@@ -73,6 +73,7 @@ __all__ = [
     "credit",
     "prompt",
     "run",
+    "main",
 ]
 
 # ---------------------------------------------------------------------------
@@ -467,7 +468,7 @@ def _status(publication: Publication) -> str:
 
 def main(arguments=None) -> int:
     parser = argparse.ArgumentParser(
-        prog="ghost_probe.py",
+        prog="ghost-probe",
         description="Read the official Ghost Probe and show what was read.",
     )
     parser.add_argument(
