@@ -388,12 +388,14 @@ def prompt(subject: str, boundary: str, edition: Optional[str] = None) -> str:
 def _with_credit(report: str, publication: Publication) -> str:
     """The report with all four credit lines at its end.
 
-    A report is left as it is only when each of the four lines stands as a
-    whole line near its end. Otherwise the four lines are added, even if that
-    repeats some of them: a repeated line is better than a missing one.
+    A report is left as it is only when its last four non-blank lines are the
+    four credit lines, in order and exactly. Otherwise the four lines are
+    added, even if that repeats some of them: a repeated line is better than
+    a missing one.
     """
-    near_the_end = {line.strip() for line in report[-2000:].splitlines()}
-    if all(line in near_the_end for line in publication.credit().splitlines()):
+    credit_lines = publication.credit().splitlines()
+    last_lines = [line for line in report.splitlines() if line.strip()][-len(credit_lines):]
+    if last_lines == credit_lines:
         return report
     return report.rstrip() + "\n\n" + publication.credit() + "\n"
 

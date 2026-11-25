@@ -220,6 +220,23 @@ class CreditTests(ReaderTestCase):
         report = self.report_for("report\n\n" + formatted)
         self.assert_ends_with_credit(report)
 
+    def test_text_after_credit_gets_four_lines(self):
+        answer = "report\n\n" + ghost_probe.credit() + "\n\nP.S. one more thing."
+        self.assert_ends_with_credit(self.report_for(answer))
+
+    def test_reordered_credit_gets_four_lines(self):
+        reordered = "\n".join(reversed(ghost_probe.credit().splitlines()))
+        self.assert_ends_with_credit(self.report_for("report\n\n" + reordered))
+
+    def test_indented_credit_gets_four_lines(self):
+        indented = "\n".join("  " + line for line in ghost_probe.credit().splitlines())
+        report = self.report_for("report\n\n" + indented)
+        self.assertEqual(report.splitlines()[-4:], ghost_probe.credit().splitlines())
+
+    def test_credit_with_trailing_blank_lines_is_unchanged(self):
+        answer = "report\n\n" + ghost_probe.credit() + "\n\n\n"
+        self.assertEqual(self.report_for(answer), answer)
+
     def test_credit_far_above_the_end_gets_four_lines(self):
         answer = "report\n\n" + ghost_probe.credit() + "\n\n" + "x" * 2500
         self.assert_ends_with_credit(self.report_for(answer))
