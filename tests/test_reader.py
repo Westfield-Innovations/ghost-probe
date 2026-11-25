@@ -72,15 +72,19 @@ class ReadTests(ReaderTestCase):
 class StopTests(ReaderTestCase):
     def test_not_https_stops_before_any_request(self):
         ghost_probe.OFFICIAL_ADDRESS = "http://azus.ai/tools/ghost-probe/"
+        ask, calls = self.ask_recorder()
         with self.assertRaises(ghost_probe.GhostProbeUnavailable):
-            ghost_probe.read()
+            ghost_probe.run("s", "b", ask)
         self.assertEqual(self.standin.requests, [])
+        self.assertEqual(calls, [])
 
     def test_unreachable_source_stops(self):
         self.nowhere()
+        ask, calls = self.ask_recorder()
         with self.assertRaises(ghost_probe.GhostProbeUnavailable) as stopped:
-            ghost_probe.read()
+            ghost_probe.run("s", "b", ask)
         self.assertIn("Nothing was run", str(stopped.exception))
+        self.assertEqual(calls, [])
 
     def test_redirect_to_another_place_stops(self):
         self.standin.serve(
@@ -89,8 +93,10 @@ class StopTests(ReaderTestCase):
             status=302,
             headers={"Location": "http://localhost:{0}/x".format(self.standin.port)},
         )
+        ask, calls = self.ask_recorder()
         with self.assertRaises(ghost_probe.GhostProbeUnavailable):
-            ghost_probe.read()
+            ghost_probe.run("s", "b", ask)
+        self.assertEqual(calls, [])
 
     def test_redirect_on_the_same_host_is_followed(self):
         self.standin.serve(
@@ -104,14 +110,18 @@ class StopTests(ReaderTestCase):
 
     def test_answer_over_two_megabytes_stops(self):
         self.standin.serve("source.json", b" " * (ghost_probe.MAX_BYTES + 1))
+        ask, calls = self.ask_recorder()
         with self.assertRaises(ghost_probe.GhostProbeUnavailable):
-            ghost_probe.read()
+            ghost_probe.run("s", "b", ask)
+        self.assertEqual(calls, [])
 
     def test_html_answer_stops(self):
         self.standin.serve("source.json", b"<!DOCTYPE html><html><body>app</body></html>")
+        ask, calls = self.ask_recorder()
         with self.assertRaises(ghost_probe.GhostProbeUnavailable) as stopped:
-            ghost_probe.read()
+            ghost_probe.run("s", "b", ask)
         self.assertIn("not the Ghost Probe publication", str(stopped.exception))
+        self.assertEqual(calls, [])
 
     def test_blank_subject_refused(self):
         ask, calls = self.ask_recorder()
