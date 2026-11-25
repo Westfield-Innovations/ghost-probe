@@ -109,8 +109,9 @@ class StopTests(ReaderTestCase):
 
     def test_html_answer_stops(self):
         self.standin.serve("source.json", b"<!DOCTYPE html><html><body>app</body></html>")
-        with self.assertRaises(ghost_probe.GhostProbeUnavailable):
+        with self.assertRaises(ghost_probe.GhostProbeUnavailable) as stopped:
             ghost_probe.read()
+        self.assertIn("not the Ghost Probe publication", str(stopped.exception))
 
     def test_blank_subject_refused(self):
         ask, calls = self.ask_recorder()

@@ -277,13 +277,9 @@ def _publication(raw: bytes, address: str, edition: Optional[str] = None) -> Pub
     try:
         data = json.loads(raw.decode("utf-8"))
     except (UnicodeDecodeError, ValueError):
-        raise GhostProbeUnavailable(
-            _cannot_read(address, "the answer was not in the expected form")
-        ) from None
+        raise _not_the_publication(address) from None
     if not isinstance(data, dict):
-        raise GhostProbeUnavailable(
-            _cannot_read(address, "the answer was not in the expected form")
-        )
+        raise _not_the_publication(address)
     publication = Publication(
         tool=_text(data, "tool", address),
         edition=_text(data, "edition", address),
